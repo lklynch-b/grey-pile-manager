@@ -1,0 +1,628 @@
+/*
+ * Grey Pile — App.css
+ * Design system: Hobby Journal, Direction B
+ * Warm cream paper · Lora serif · Caveat handwritten · JetBrains Mono counts
+ *
+ * ─── Contents ────────────────────────────────────────────────────────────────
+ *
+ *  1. Fonts
+ *  2. Design tokens          ← all colours, fonts, spacing in one place
+ *  3. Reset & base
+ *  4. Layout                 .app  .card-stack
+ *  5. Card                   .card  .card--lg  .card--inset
+ *  6. Typography             .t-screen-title  .t-card-title  .t-list-title
+ *                            .t-list-subtitle  .t-body  .t-section-label
+ *                            .t-micro  .t-hand  .t-secondary  .t-tertiary
+ *  7. Divider                .rule
+ *  8. Stage badges           .badge  .badge--{stage}
+ *  9. Stage breakdown bar    .stage-bar  .stage-bar__segment--{stage}
+ * 10. Polaroid card          .polaroid  .polaroid__photo  .polaroid__caption
+ * 11. Rotation helpers       .rotate-neg-sm/md  .rotate-pos-sm/md
+ * 12. Input fields           .field
+ * 13. Buttons                .btn  .btn--primary  .btn--ghost
+ * 14. Event colours          .event--{type}  .event-plaque--{type}
+ * 15. Tab bar                .page-shell  .page-content  .tab-bar  .tab-bar__link
+ * 16. Faction accent         .faction-header
+ *
+ * Stage names (used throughout): unbuilt · built · primed · base · painted
+ * Event types (used throughout): tournament · game-night · personal
+ *
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+
+/* ─── 1. Fonts ───────────────────────────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600;1,700&display=swap');
+
+
+/* ─── 2. Design tokens ───────────────────────────────────────────────────────── */
+
+:root {
+  /* — Surface —
+     bg    page background (sits under the noise texture)
+     bg2   inset / nested surface (slightly darker)
+     card  primary card surface
+     edge  1px card border colour
+     rule  dashed divider colour                                               */
+  --bg:   #f6efe1;
+  --bg2:  #ede3cf;
+  --card: #fffaee;
+  --edge: #d8c9a8;
+  --rule: #e1d3b1;
+
+  /* — Ink —
+     ink   primary text
+     ink2  secondary / muted text
+     ink3  tertiary / placeholder / disabled                                   */
+  --ink:  #3b2f23;
+  --ink2: #7a6549;
+  --ink3: #b09a76;
+
+  /* — Accent —
+     accent   terracotta — CTAs, handwritten highlights
+     accent2  sage — secondary handwritten accent                              */
+  --accent:  #b6553e;
+  --accent2: #5d7c63;
+
+  /* — Stage colours —
+     Each stage has three tones:
+       -ink   text / border (darkest)
+       -fill  breakdown bar segment (mid)
+       -tag   badge background (lightest pastel)                               */
+  --stage-unbuilt-ink:  #857258;
+  --stage-unbuilt-fill: #cfc1a3;
+  --stage-unbuilt-tag:  #e5d8b7;
+
+  --stage-built-ink:    #7b5a3d;
+  --stage-built-fill:   #caa37c;
+  --stage-built-tag:    #ecd6b9;
+
+  --stage-primed-ink:   #8e7a32;
+  --stage-primed-fill:  #d6c161;
+  --stage-primed-tag:   #efe4ad;
+
+  --stage-base-ink:     #4f7256;
+  --stage-base-fill:    #a3c0a4;
+  --stage-base-tag:     #d6e4cf;
+
+  --stage-painted-ink:  #a04a3a;
+  --stage-painted-fill: #d97b66;
+  --stage-painted-tag:  #f1c9b8;
+
+  /* — Event type colours —
+     Used on date plaques, calendar ribbons, and urgent footers               */
+  --event-tournament: #b6553e;   /* terracotta */
+  --event-game-night: #5d7c63;   /* sage        */
+  --event-personal:   #9a8cb8;   /* lilac       */
+
+  /* — Fonts —
+     serif  Lora     — body text, headings, primary UI
+     hand   Caveat   — accent labels, notes, captions, countdowns
+     mono   JetBrains Mono — counts, all-caps section labels, model numbers   */
+  --font-serif: 'Lora', Georgia, serif;
+  --font-hand:  'Caveat', cursive;
+  --font-mono:  'JetBrains Mono', 'Courier New', monospace;
+
+  /* — Spacing & shape — */
+  --card-pad:    14px;
+  --card-pad-lg: 16px;
+  --card-gap:    14px;   /* gap between stacked cards */
+  --page-pad:    16px;   /* horizontal page margin    */
+  --radius:      4px;    /* subtle, paper-y — not rounded-pill */
+  --card-border: 1px solid var(--edge);
+  --card-shadow: 2px 2px 0 rgba(140, 110, 60, 0.07),
+                 0 6px 18px rgba(140, 110, 60, 0.06);
+}
+
+
+/* ─── 3. Reset & base ────────────────────────────────────────────────────────── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-serif);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink);
+  background-color: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Inline SVG fractalNoise texture overlaid at 7% — gives the warm paper feel */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.07;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Push content above the texture layer */
+#root {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
+
+/* ─── 4. Layout ──────────────────────────────────────────────────────────────── */
+
+/* Outer page wrapper — centres content on wider screens */
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 var(--page-pad);
+}
+
+/* Vertical stack of cards with consistent gap
+   Usage: <div className="card-stack"> ... </div>               */
+.card-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--card-gap);
+  padding: var(--card-gap) 0;
+}
+
+
+/* ─── 5. Card ────────────────────────────────────────────────────────────────── */
+
+/*
+  .card          standard card (14px pad, cream bg, 1px edge border, soft shadow)
+  .card.card--lg bump padding to 16px for larger hero cards
+  .card.card--inset  darker bg2 surface for nested / inset sections
+*/
+.card {
+  background: var(--card);
+  border: var(--card-border);
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  padding: var(--card-pad);
+}
+
+.card--lg    { padding: var(--card-pad-lg); }
+.card--inset { background: var(--bg2); }
+
+
+/* ─── 6. Typography ──────────────────────────────────────────────────────────── */
+
+/*
+  Serif (Lora) scale
+  ──────────────────
+  .t-screen-title   24px 700   screen headers (Journal, Roster, Paint Library)
+  .t-card-title     16px 700i  card section headers ("Upcoming", "By army")
+  .t-list-title     14px 700   unit names, paint names, list primaries
+  .t-list-subtitle  13px 600   faction name under unit, paint type chip
+  .t-body           12px 500   general body copy (matches body default)
+  .t-section-label  11px mono  all-caps labels: STARTING AT, THE PILE
+  .t-micro          10px mono  stage counts, usage numbers, all-caps
+
+  Handwritten (Caveat) — .t-hand
+  ────────────────────────────────
+  .t-hand           18px  base handwritten
+  .t-hand--sm       16px  smaller hand (nav links, cancel button)
+  .t-hand--lg       22px  large hand (countdown, hero numbers)
+  .t-hand--accent   terracotta ink
+  .t-hand--sage     sage ink
+
+  Ink colour modifiers (can apply to any text element)
+  ─────────────────────────────────────────────────────
+  .t-secondary      var(--ink2)  muted / supporting text
+  .t-tertiary       var(--ink3)  placeholder / disabled / very muted
+*/
+
+.t-screen-title {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--ink);
+}
+
+.t-card-title {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--ink);
+}
+
+.t-list-title {
+  font-family: var(--font-serif);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.t-list-subtitle {
+  font-family: var(--font-serif);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink2);
+}
+
+.t-body {
+  font-family: var(--font-serif);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.t-section-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--ink2);
+}
+
+.t-micro {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  text-transform: uppercase;
+  color: var(--ink3);
+}
+
+/* Caveat handwritten — combine with size/colour modifiers below */
+.t-hand {
+  font-family: var(--font-hand);
+  font-size: 18px;
+  font-style: italic;
+  color: var(--ink);
+}
+
+.t-hand--sm {
+  font-size: 16px;
+}
+
+.t-hand--lg {
+  font-size: 22px;
+}
+
+.t-hand--accent {
+  font-family: var(--font-hand);
+  color: var(--accent);   /* terracotta */
+  font-size: 18px;
+}
+
+.t-hand--sage {
+  color: var(--accent2);  /* sage */
+}
+
+/* Ink modifiers — composable with any text class */
+.t-secondary { color: var(--ink2); }
+.t-tertiary  { color: var(--ink3); }
+
+
+/* ─── 7. Divider ─────────────────────────────────────────────────────────────── */
+
+/* 1px dashed ruled-paper line between list rows or card sections
+   Usage: <hr className="rule" />                                              */
+.rule {
+  border: none;
+  border-top: 1px dashed var(--rule);
+  margin: 10px 0;
+}
+
+
+/* ─── 8. Stage badges ────────────────────────────────────────────────────────── */
+
+/*
+  Stamp-style pill: Caveat text, dashed border, pastel bg.
+  Always combine base + stage modifier:
+
+    <span className="badge badge--painted">painted</span>
+
+  Stages: unbuilt · built · primed · base · painted
+
+  The nth-child rotation is decorative — override with inline style if needed:
+    <span className="badge badge--primed" style={{ transform: 'rotate(-1deg)' }}>
+*/
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 3px;
+  border: 1px dashed currentColor;
+  font-family: var(--font-hand);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge--unbuilt { color: var(--stage-unbuilt-ink); background: var(--stage-unbuilt-tag); }
+.badge--built   { color: var(--stage-built-ink);   background: var(--stage-built-tag);   }
+.badge--primed  { color: var(--stage-primed-ink);  background: var(--stage-primed-tag);  }
+.badge--base    { color: var(--stage-base-ink);    background: var(--stage-base-tag);    }
+.badge--painted { color: var(--stage-painted-ink); background: var(--stage-painted-tag); }
+
+.badge:nth-child(odd)  { transform: rotate(-0.6deg); }
+.badge:nth-child(even) { transform: rotate(0.4deg);  }
+
+
+/* ─── 9. Stage breakdown bar ─────────────────────────────────────────────────── */
+
+/*
+  5-segment horizontal bar showing stage distribution.
+  Set each segment's width via inline style (percentage of unit's model count).
+
+  Usage:
+    <div className="stage-bar">
+      <div className="stage-bar__segment stage-bar__segment--unbuilt" style={{ width: '40%' }} />
+      <div className="stage-bar__segment stage-bar__segment--built"   style={{ width: '20%' }} />
+      <div className="stage-bar__segment stage-bar__segment--primed"  style={{ width: '20%' }} />
+      <div className="stage-bar__segment stage-bar__segment--base"    style={{ width: '10%' }} />
+      <div className="stage-bar__segment stage-bar__segment--painted" style={{ width: '10%' }} />
+    </div>
+
+  Omit a segment (or set width: 0) if that stage count is 0.
+*/
+.stage-bar {
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  gap: 1px;
+}
+
+.stage-bar__segment { height: 100%; }
+
+.stage-bar__segment--unbuilt { background: var(--stage-unbuilt-fill); }
+.stage-bar__segment--built   { background: var(--stage-built-fill);   }
+.stage-bar__segment--primed  { background: var(--stage-primed-fill);  }
+.stage-bar__segment--base    { background: var(--stage-base-fill);    }
+.stage-bar__segment--painted { background: var(--stage-painted-fill); }
+
+
+/* ─── 10. Polaroid card ──────────────────────────────────────────────────────── */
+
+/*
+  White-bordered photo card with caption strip, rotated −1.2°.
+
+  Usage:
+    <div className="polaroid">
+      <div className="polaroid__photo" />          ← swap for <img> when you have a photo
+      <span className="polaroid__caption">tap to snap</span>
+    </div>
+
+  The add-form variant rotates further — add .rotate-neg-md (see section 11).
+*/
+.polaroid {
+  background: #fff;
+  padding: 8px 8px 28px;   /* 28px bottom = caption strip */
+  border-radius: 2px;
+  box-shadow:
+    2px 3px 0 rgba(140, 110, 60, 0.10),
+    0 8px 24px rgba(140, 110, 60, 0.10);
+  transform: rotate(-1.2deg);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.polaroid__photo {
+  width: 100%;
+  aspect-ratio: 1;
+  background: var(--bg2);  /* placeholder fill until real photo */
+  border-radius: 1px;
+}
+
+.polaroid__caption {
+  font-family: var(--font-hand);
+  font-size: 13px;
+  color: var(--ink2);
+  margin-top: 6px;
+  text-align: center;
+}
+
+
+/* ─── 11. Rotation helpers ───────────────────────────────────────────────────── */
+
+/*
+  Apply to any card / note / label that needs the subtle paper-journal tilt.
+
+  .rotate-neg-sm   −0.5°  light tilt left  (post-it style notes)
+  .rotate-pos-sm   +0.5°  light tilt right (notes card)
+  .rotate-neg-md   −1.5°  stronger left    (add-form polaroid per spec)
+  .rotate-pos-md   +0.4°  stronger right   (restock card, recipe mini-cards)
+*/
+.rotate-neg-sm { transform: rotate(-0.5deg); }
+.rotate-pos-sm { transform: rotate(0.5deg);  }
+.rotate-neg-md { transform: rotate(-1.5deg); }
+.rotate-pos-md { transform: rotate(0.4deg);  }
+
+
+/* ─── 12. Input fields ───────────────────────────────────────────────────────── */
+
+/*
+  Dashed underline text input — no visible box, borderless except the bottom line.
+  Placeholder renders in Caveat for the handwritten feel.
+
+  Usage:
+    <input className="field" placeholder="faction name" />
+*/
+.field {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--edge);
+  padding: 6px 0;
+  font-family: var(--font-serif);
+  font-size: 14px;
+  color: var(--ink);
+  outline: none;
+}
+
+.field::placeholder {
+  font-family: var(--font-hand);
+  color: var(--ink3);
+}
+
+.field:focus {
+  border-bottom-color: var(--accent);
+}
+
+
+/* ─── 13. Buttons ────────────────────────────────────────────────────────────── */
+
+/*
+  .btn              base — flex centred, serif 14px bold, 4px radius
+  .btn--primary     full-width terracotta CTA with hard box-shadow (sticky save bar)
+  .btn--ghost       transparent / Caveat — used for cancel, back, handwritten links
+
+  The advance-stage button disables at Painted — just add disabled attr, styles handle it.
+*/
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  padding: 10px 20px;
+  transition: opacity 0.15s;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  width: 100%;
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 3px 3px 0 rgba(90, 30, 10, 0.25);
+}
+
+.btn--primary:hover:not(:disabled) { opacity: 0.9; }
+
+.btn--secondary {
+  width: 100%;
+  background: transparent;
+  color: var(--accent);
+  border: 1px dashed var(--accent);
+}
+
+.btn--secondary:hover:not(:disabled) { background: var(--stage-painted-tag); }
+
+.btn--ghost {
+  background: transparent;
+  color: var(--accent);
+  font-family: var(--font-hand);
+  font-size: 16px;
+  padding: 4px 0;
+}
+
+
+/* ─── 14. Event colours ──────────────────────────────────────────────────────── */
+
+/*
+  Event types: tournament · game-night · personal
+
+  .event--{type}        text colour only — for labels, headings, footers
+  .event-plaque--{type} filled background with white text — for date plaques
+
+  Usage:
+    <span className="event--tournament">Spring Open</span>
+    <div className="event-plaque--game-night">15 Jun</div>
+*/
+.event--tournament { color: var(--event-tournament); }
+.event--game-night { color: var(--event-game-night); }
+.event--personal   { color: var(--event-personal);   }
+
+.event-plaque--tournament { background: var(--event-tournament); color: #fff; }
+.event-plaque--game-night { background: var(--event-game-night); color: #fff; }
+.event-plaque--personal   { background: var(--event-personal);   color: #fff; }
+
+
+/* ─── 15. Tab bar ───────────────────────────────────────────────────────────────── */
+
+/*
+  Fixed bottom nav bar. Safe-area-inset-bottom handles Android gesture nav.
+  viewport-fit=cover must be set in index.html for env() to have effect.
+
+  .page-shell   full-height flex column wrapper for the whole app
+  .page-content scrollable main area — padded so content clears the tab bar
+
+  NavLink automatically adds class="active" on the matched route.
+*/
+.page-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;  /* dvh updates as browser chrome shows/hides */
+}
+
+.page-content {
+  flex: 1;
+  /* clears the fixed tab bar (64px) + any system gesture area below it */
+  padding-bottom: calc(64px + env(safe-area-inset-bottom));
+}
+
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  /* grow with the safe area so it sits above the gesture strip */
+  height: calc(64px + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: var(--card);
+  border-top: var(--card-border);
+  box-shadow: 0 -2px 8px rgba(140, 110, 60, 0.08);
+  z-index: 100;
+}
+
+.tab-bar__link {
+  font-family: var(--font-hand);
+  font-size: 16px;
+  font-weight: 400;
+  text-decoration: none;
+  color: var(--ink3);
+  padding: 8px 16px;
+  transition: color 0.1s;
+}
+
+.tab-bar__link.active {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+
+/* ─── 16. Faction accent ─────────────────────────────────────────────────────── */
+
+/*
+  Left-bordered faction header — accent colour comes from the faction's own hex,
+  passed as a CSS custom property inline so each faction uses its own colour.
+
+  Usage:
+    <div className="faction-header" style={{ '--faction-accent': faction.accent }}>
+      {faction.name}
+    </div>
+
+  Falls back to --edge if no accent is set.
+*/
+.faction-header {
+  border-left: 3px solid var(--faction-accent, var(--edge));
+  padding-left: 10px;
+  font-family: var(--font-serif);
+  font-size: 13px;
+  font-style: italic;
+  font-weight: 600;
+  color: var(--ink2);
+}
