@@ -6,7 +6,7 @@ import { Unit } from '../../types';
 const EVENT_COLOURS = [
   { label: 'Tournament', value: '#b6553e' },
   { label: 'Game night', value: '#5d7c63' },
-  { label: 'Personal',   value: '#9a8cb8' },
+  { label: 'Personal', value: '#9a8cb8' },
 ];
 
 type AddEventModalProps = {
@@ -17,13 +17,13 @@ export default function AddEventModal({ onClose }: AddEventModalProps) {
   const dispatch = useAppDispatch();
   const factions = useAppSelector(s => s.factions.items);
 
-  const [name,         setName]         = useState('');
-  const [venue,        setVenue]        = useState('');
-  const [eventDate,    setEventDate]    = useState('');
-  const [scope,        setScope]        = useState('');
-  const [color,        setColor]        = useState('#b6553e');
-  const [saving,       setSaving]       = useState(false);
-  const [error,        setError]        = useState<string | null>(null);
+  const [name, setName] = useState('');
+  const [venue, setVenue] = useState('');
+  const [eventDate, setEventDate] = useState('');
+  const [scope, setScope] = useState('');
+  const [color, setColor] = useState('#b6553e');
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Units selected for this event
   const [selectedUnitIds, setSelectedUnitIds] = useState<number[]>([]);
@@ -33,17 +33,17 @@ export default function AddEventModal({ onClose }: AddEventModalProps) {
     f.units.map(u => ({ ...u, factionName: f.name }))
   );
   const selectedSet = new Set(selectedUnitIds.map(Number));
-  const unselected  = allUnits.filter(u => !selectedSet.has(Number(u.id)));
-  const selected    = selectedUnitIds.map(id => allUnits.find(u => Number(u.id) === Number(id))).filter(Boolean) as (Unit & { factionName: string })[];
+  const unselected = allUnits.filter(u => !selectedSet.has(Number(u.id)));
+  const selected = selectedUnitIds.map(id => allUnits.find(u => Number(u.id) === Number(id))).filter(Boolean) as (Unit & { factionName: string })[];
 
   // Total derived from selected units' model counts
   const modelsNeeded = selected.reduce((sum, u) => sum + u.modelCount, 0);
 
-  const addUnit    = (id: number) => setSelectedUnitIds(ids => [...ids, id]);
+  const addUnit = (id: number) => setSelectedUnitIds(ids => [...ids, id]);
   const removeUnit = (id: number) => setSelectedUnitIds(ids => ids.filter(i => i !== id));
 
   const shortName = name.trim().split(' ')[0].slice(0, 8);
-  const canSave   = name.trim() && eventDate;
+  const canSave = name.trim() && eventDate;
 
   const handleSave = async () => {
     if (!canSave || saving) return;
@@ -51,18 +51,18 @@ export default function AddEventModal({ onClose }: AddEventModalProps) {
     setError(null);
     try {
       await dispatch(createEvent({
-        name:      name.trim(),
+        name: name.trim(),
         shortName,
-        venue:     venue.trim() || undefined,
+        venue: venue.trim() || undefined,
         eventDate,
-        scope:     scope.trim(),
+        scope: scope.trim(),
         modelsNeeded,
         color,
-        unitIds:   selectedUnitIds,
+        unitIds: selectedUnitIds,
       }));
       onClose();
-    } catch {
-      setError('something went wrong — try again');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'something went wrong — try again');
       setSaving(false);
     }
   };
