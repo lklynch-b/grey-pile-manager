@@ -1,0 +1,21 @@
+FROM node:20-alpine AS build
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+
+# REACT_APP_API_URL must be set as a build-time variable in Railway,
+# since CRA bakes REACT_APP_* vars into the static bundle at build time.
+ARG REACT_APP_API_URL
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
+RUN npm run build
+
+FROM node:20-alpine AS runtime
+WORKDIR /app
+RUN npm install -g serve
+COPY --from=build /app/build ./build
+
+# Railway injects $PORT at container start; shell form resolves it at runtime.
+CMD serve -s build -l $PORT

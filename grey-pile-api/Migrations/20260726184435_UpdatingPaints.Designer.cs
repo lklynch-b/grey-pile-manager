@@ -3,6 +3,7 @@ using System;
 using GreyPileApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace grey_pile_api.Migrations
 {
     [DbContext(typeof(GreyPileDbContext))]
-    partial class GreyPileDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260726184435_UpdatingPaints")]
+    partial class UpdatingPaints
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
